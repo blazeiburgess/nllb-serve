@@ -6,6 +6,8 @@ import os
 import sys
 import platform
 from argparse import ArgumentParser, ArgumentDefaultsHelpFormatter
+
+from nllb_serve.constants import LANGUAGE_MAPPER
 from .utils import sentence_splitter, ssplit_lang
 
 from functools import lru_cache
@@ -88,6 +90,7 @@ def attach_translate_route(
     log.info(f"Loading default tokenizer for {model_id} ...")
     tokenizer = AutoTokenizer.from_pretrained(model_id)
     src_langs = tokenizer.additional_special_tokens
+    print(src_langs)
     tgt_langs = src_langs
 
     @lru_cache(maxsize=256)
@@ -99,7 +102,7 @@ def attach_translate_route(
     @bp.route('/')
     def index():
         args = dict(src_langs=src_langs, tgt_langs=tgt_langs, model_id=model_id,
-                    def_src_lang=def_src_lang, def_tgt_lang=def_tgt_lang)
+                    def_src_lang=def_src_lang, def_tgt_lang=def_tgt_lang, language_mapper=LANGUAGE_MAPPER)
         return render_template('index.html', **args)
 
 
